@@ -22,20 +22,20 @@ import retrofit.client.Response;
 public class MainActivity extends ActionBarActivity {
 
     private static final String BASE_URL = "https://api.particle.io/v1/devices/";
-    private static final String DEVICE = "27002c001147343339383037";
-    private static final String DEVICE_URL = BASE_URL + DEVICE;
-
-    public static final String ACCESS_TOKEN = "c06b11a1dad6ba977fca8c75213cfac9eb8976b3";
+    public static final String DEVICE_ID_KEY = "device_id";
 
     public static final String OFF_PARAM = "off";
     public static final String TEMP_18_PARAM = "18-2-4";
     public static final String TEMP_20_PARAM = "20-2-4";
     public static final String TEMP_22_PARAM = "22-2-4";
 
+    private SharedPreferences prefs;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         getRoomTemperature();
 
@@ -87,6 +87,7 @@ public class MainActivity extends ActionBarActivity {
         DaikinAcService service = getDaikinAcService();
         HashMap<String, String> queryMap = new HashMap<>();
         queryMap.put(DaikinAcService.ACCESS_TOKEN_KEY, getAccessToken());
+        Log.i("temperature", DaikinAcService.ACCESS_TOKEN_KEY + "=" + getAccessToken());
         service.roomTemperature(queryMap, new Callback<TemperatureResponse>() {
             @Override
             public void success(TemperatureResponse temperatureResponse, Response response) {
@@ -104,7 +105,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void control(final String controlParams) {
         DaikinAcService service = getDaikinAcService();
-        service.control(ACCESS_TOKEN, controlParams, new Callback<DaikinAcResponse>() {
+        service.control(getAccessToken(), controlParams, new Callback<DaikinAcResponse>() {
             @Override
             public void success(DaikinAcResponse daikinAcResponse, Response response) {
                 Log.i("control", daikinAcResponse.getReturnValue());
@@ -118,12 +119,16 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private DaikinAcService getDaikinAcService() {
-        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(DEVICE_URL).build();
+        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(getUrl()).build();
         return restAdapter.create(DaikinAcService.class);
     }
 
     private String getAccessToken() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        return prefs.getString(DaikinAcService.ACCESS_TOKEN_KEY, ACCESS_TOKEN);
+        return prefs.getString(DaikinAcService.ACCESS_TOKEN_KEY, getResources().getString(R.string.default_access_token));
     }
+
+    private String getUrl() {
+        return BASE_URL + prefs.getString(DEVICE_ID_KEY, getResources().getString(R.string.default_device));
+    }
+
 }

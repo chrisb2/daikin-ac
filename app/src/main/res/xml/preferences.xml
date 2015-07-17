@@ -4,6 +4,10 @@
         <EditTextPreference android:key="access_token"
             android:title="@string/access_token_setting_title"
             android:summary="@string/access_token_setting_summary"
-            android:defaultValue="c06b11a1dad6ba977fca8c75213cfac9eb8976b3"/>
+            android:defaultValue="@string/default_access_token"/>
+        <EditTextPreference android:key="device_id"
+            android:title="@string/device_id_setting_title"
+            android:summary="@string/device_id_setting_summary"
+            android:defaultValue="@string/default_device"/>
     </PreferenceCategory>
 </PreferenceScreen>

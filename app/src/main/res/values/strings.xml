@@ -5,7 +5,9 @@
     <string name="action_settings">Settings</string>
     <string name="authorization_setting_title">Authorization</string>
     <string name="access_token_setting_title">Access Token</string>
-    <string name="access_token_setting_summary">The access token for the AC Photon registered in the Particle Cloud API</string>
+    <string name="access_token_setting_summary">The access token for the Particle Cloud API</string>
+    <string name="device_id_setting_title">Device Id</string>
+    <string name="device_id_setting_summary">The device id of the Photon</string>
     <string name="off">Off</string>
     <string name="temp18">18</string>
     <string name="temp20">20</string>
