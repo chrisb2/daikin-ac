@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/authorization_setting_title" >
+        <EditTextPreference android:key="access_token"
+            android:title="@string/access_token_setting_title"
+            android:summary="@string/access_token_setting_summary"
+            android:defaultValue="c06b11a1dad6ba977fca8c75213cfac9eb8976b3"/>
+    </PreferenceCategory>
+</PreferenceScreen>

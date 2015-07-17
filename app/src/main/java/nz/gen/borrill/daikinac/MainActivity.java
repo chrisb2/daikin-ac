@@ -1,5 +1,8 @@
 package nz.gen.borrill.daikinac;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,6 +49,10 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        Intent prefsIntent = new Intent(getApplicationContext(), SettingsActivity.class);
+        MenuItem preferences = menu.findItem(R.id.action_settings);
+        preferences.setIntent(prefsIntent);
         return true;
     }
 
@@ -58,18 +65,19 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(item.getIntent());
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public void addListenerOnButton (int buttonId, final String params) {
+    private void addListenerOnButton (int buttonId, final String params) {
         Button button = (Button) findViewById(buttonId);
         button.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onClick(View arg0) {
+            public void onClick(View view) {
                 control(params);
             }
         });
@@ -78,7 +86,7 @@ public class MainActivity extends ActionBarActivity {
     private void getRoomTemperature() {
         DaikinAcService service = getDaikinAcService();
         HashMap queryMap = new HashMap();
-        queryMap.put(DaikinAcService.ACCESS_TOKEN_KEY, ACCESS_TOKEN);
+        queryMap.put(DaikinAcService.ACCESS_TOKEN_KEY, getAccessToken());
         service.roomTemperature(queryMap, new Callback<DaikinAcResult>() {
             @Override
             public void success(DaikinAcResult daikinAcResult, Response response) {
@@ -112,5 +120,10 @@ public class MainActivity extends ActionBarActivity {
     private DaikinAcService getDaikinAcService() {
         RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(DEVICE_URL).build();
         return restAdapter.create(DaikinAcService.class);
+    }
+
+    private String getAccessToken() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        return prefs.getString(DaikinAcService.ACCESS_TOKEN_KEY, ACCESS_TOKEN);
     }
 }
