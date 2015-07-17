@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 /**
  * Created by Chris on 16/07/2015.
  */
-public class DaikinAcResult {
+public class TemperatureResponse {
 
     public static final String DEGREES_C = "\u2103";
 

@@ -33,7 +33,7 @@ public class MainActivity extends ActionBarActivity {
     public static final String TEMP_22_PARAM = "22-2-4";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -46,7 +46,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
@@ -57,7 +57,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up offButton, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -72,7 +72,7 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void addListenerOnButton (int buttonId, final String params) {
+    private void addListenerOnButton (final int buttonId, final String params) {
         Button button = (Button) findViewById(buttonId);
         button.setOnClickListener(new View.OnClickListener() {
 
@@ -85,14 +85,14 @@ public class MainActivity extends ActionBarActivity {
 
     private void getRoomTemperature() {
         DaikinAcService service = getDaikinAcService();
-        HashMap queryMap = new HashMap();
+        HashMap<String, String> queryMap = new HashMap<>();
         queryMap.put(DaikinAcService.ACCESS_TOKEN_KEY, getAccessToken());
-        service.roomTemperature(queryMap, new Callback<DaikinAcResult>() {
+        service.roomTemperature(queryMap, new Callback<TemperatureResponse>() {
             @Override
-            public void success(DaikinAcResult daikinAcResult, Response response) {
-                Log.i("temperature", daikinAcResult.getResult());
+            public void success(TemperatureResponse temperatureResponse, Response response) {
+                Log.i("temperature", temperatureResponse.getResult());
                 TextView temperatureView = (TextView) findViewById(R.id.temperature);
-                temperatureView.setText(daikinAcResult.getFormattedTemperature());
+                temperatureView.setText(temperatureResponse.getFormattedTemperature());
             }
 
             @Override
@@ -102,7 +102,7 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    private void control(String controlParams) {
+    private void control(final String controlParams) {
         DaikinAcService service = getDaikinAcService();
         service.control(ACCESS_TOKEN, controlParams, new Callback<DaikinAcResponse>() {
             @Override

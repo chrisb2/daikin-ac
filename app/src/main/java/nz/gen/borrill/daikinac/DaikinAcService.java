@@ -18,7 +18,7 @@ public interface DaikinAcService {
     String PARAMS_KEY = "params";
 
     @GET("/temperature")
-    void roomTemperature(@QueryMap Map<String, String> options, Callback<DaikinAcResult> resp);
+    void roomTemperature(@QueryMap Map<String, String> options, Callback<TemperatureResponse> resp);
 
     //void start(Callback<DaikinAcResponse> resp);
 

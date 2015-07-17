@@ -9,57 +9,56 @@
 
     <TextView android:id="@+id/temperature"
         android:text="@string/temperature"
-        android:textSize="40sp"
+        android:textSize="@dimen/font_size"
         style="@style/txtStyleSeagull"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
-        android:width="120dp"
-        android:layout_marginBottom="10dp" />
+        android:width="@dimen/widget_width"
+        android:layout_marginBottom="@dimen/widget_margin" />
 
     <Button
         android:id="@+id/button18"
         android:text="@string/temp18"
-        android:textSize="40sp"
+        android:textSize="@dimen/font_size"
         style="@style/btnStyleSeagull"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:width="120dp"
+        android:width="@dimen/widget_width"
         android:clickable="true"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="@dimen/widget_margin" />
 
     <Button
         android:id="@+id/button20"
         android:text="@string/temp20"
-        android:textSize="40sp"
+        android:textSize="@dimen/font_size"
         style="@style/btnStyleSeagull"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:width="120dp"
+        android:width="@dimen/widget_width"
         android:clickable="true"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="@dimen/widget_margin" />
 
     <Button
         android:id="@+id/button22"
         android:text="@string/temp22"
-        android:textSize="40sp"
+        android:textSize="@dimen/font_size"
         style="@style/btnStyleSeagull"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:width="120dp"
+        android:width="@dimen/widget_width"
         android:clickable="true"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="@dimen/widget_margin" />
 
     <Button
         android:id="@+id/buttonOff"
         android:text="@string/off"
-        android:textSize="40sp"
+        android:textSize="@dimen/font_size"
         style="@style/btnStyleSeagull"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAllCaps="false"
-        android:width="120dp"
+        android:width="@dimen/widget_width"
         android:clickable="true"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="@dimen/widget_margin" />
 
 </LinearLayout>
