@@ -5,13 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,7 +29,7 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String BASE_URL = "https://api.particle.io/v1/devices/";
     public static final String DEVICE_ID_KEY = "device_id";
@@ -39,7 +38,7 @@ public class MainActivity extends ActionBarActivity {
     public static final String TEMP_18_PARAM = "18-2-4";
     public static final String TEMP_20_PARAM = "20-2-4";
     public static final String TEMP_22_PARAM = "22-2-4";
-    
+
     public static final int TWO_SECONDS = 2000;
 
     private SharedPreferences prefs;
