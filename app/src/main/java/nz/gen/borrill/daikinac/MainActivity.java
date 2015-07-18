@@ -32,14 +32,14 @@ import retrofit.client.Response;
 public class MainActivity extends AppCompatActivity {
 
     private static final String BASE_URL = "https://api.particle.io/v1/devices/";
-    public static final String DEVICE_ID_KEY = "device_id";
+    private static final String DEVICE_ID_KEY = "device_id";
 
-    public static final String OFF_PARAM = "off";
-    public static final String TEMP_18_PARAM = "18-2-4";
-    public static final String TEMP_20_PARAM = "20-2-4";
-    public static final String TEMP_22_PARAM = "22-2-4";
+    private static final String OFF_PARAM = "off";
+    private static final String TEMP_18_PARAM = "18-2-4";
+    private static final String TEMP_20_PARAM = "20-2-4";
+    private static final String TEMP_22_PARAM = "22-2-4";
 
-    public static final int TWO_SECONDS = 2000;
+    private static final int TWO_SECOND_DELAY = 2000;
 
     private SharedPreferences prefs;
 
@@ -59,15 +59,10 @@ public class MainActivity extends AppCompatActivity {
         this.service = getDaikinAcService(getUrl());
         this.queryMap.put(DaikinAcService.ACCESS_TOKEN_KEY, getAccessToken());
 
-        getRoomTemperature();
-
         addListenerOnButton(R.id.buttonOff, OFF_PARAM);
         addListenerOnButton(R.id.button18, TEMP_18_PARAM);
         addListenerOnButton(R.id.button20, TEMP_20_PARAM);
         addListenerOnButton(R.id.button22, TEMP_22_PARAM);
-
-        configureNetworkConnectTemperature();
-        configureScheduledTemperature();
     }
 
     private void configureNetworkConnectTemperature() {
@@ -87,13 +82,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (receiver != null) {
-            this.unregisterReceiver(receiver);
-        }
+    public void onPause() {
+        super.onPause();
         if (this.future != null) {
             this.future.cancel(true);
+        }
+        if (receiver != null) {
+            this.unregisterReceiver(receiver);
         }
     }
 
@@ -101,6 +96,8 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         getRoomTemperature();
+        configureScheduledTemperature();
+        configureNetworkConnectTemperature();
     }
 
     @Override
@@ -146,14 +143,14 @@ public class MainActivity extends AppCompatActivity {
 
         this.service.roomTemperature(this.queryMap, new Callback<TemperatureResponse>() {
             @Override
-            public void success(TemperatureResponse temperatureResponse, Response response) {
+            public void success(final TemperatureResponse temperatureResponse, final Response response) {
                 Log.i("temperature", temperatureResponse.getResult());
                 setTemperatureTextColour(temperatureView, R.color.text_colour_default);
                 temperatureView.setText(temperatureResponse.getFormattedTemperature());
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void failure(final RetrofitError error) {
                 setTemperatureTextColour(temperatureView, R.color.text_colour_error);
                 Log.e("temperature", error.toString());
             }
@@ -167,13 +164,13 @@ public class MainActivity extends AppCompatActivity {
     private void control(final Button button, final String controlParams) {
         this.service.control(getAccessToken(), controlParams, new Callback<DaikinAcResponse>() {
             @Override
-            public void success(DaikinAcResponse daikinAcResponse, Response response) {
+            public void success(final DaikinAcResponse daikinAcResponse, final Response response) {
                 flashButtonText(button, daikinAcResponse.isSuccess());
                 Log.i("control", daikinAcResponse.getReturnValue());
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void failure(final RetrofitError error) {
                 flashButtonText(button, false);
                 Log.e("control", error.toString());
             }
@@ -195,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 button.setTextColor(currentColour);
             }
-        }, TWO_SECONDS);
+        }, TWO_SECOND_DELAY);
     }
 
     private DaikinAcService getDaikinAcService(final String url) {
@@ -213,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
 
     private class NetworkReceiver extends BroadcastReceiver {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
             ConnectivityManager conn = (ConnectivityManager)
                     context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = conn.getActiveNetworkInfo();
