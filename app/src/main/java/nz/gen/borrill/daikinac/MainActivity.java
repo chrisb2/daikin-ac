@@ -1,7 +1,12 @@
 package nz.gen.borrill.daikinac;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -31,6 +36,9 @@ public class MainActivity extends ActionBarActivity {
 
     private SharedPreferences prefs;
 
+    // The BroadcastReceiver that tracks network connectivity changes.
+    private NetworkReceiver receiver = new NetworkReceiver();
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +51,20 @@ public class MainActivity extends ActionBarActivity {
         addListenerOnButton(R.id.button18, TEMP_18_PARAM);
         addListenerOnButton(R.id.button20, TEMP_20_PARAM);
         addListenerOnButton(R.id.button22, TEMP_22_PARAM);
+
+        // Registers BroadcastReceiver to track network connection changes.
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        receiver = new NetworkReceiver();
+        this.registerReceiver(receiver, filter);
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (receiver != null) {
+            this.unregisterReceiver(receiver);
+        }
     }
 
     @Override
@@ -72,7 +94,7 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void addListenerOnButton (final int buttonId, final String params) {
+    private void addListenerOnButton(final int buttonId, final String params) {
         Button button = (Button) findViewById(buttonId);
         button.setOnClickListener(new View.OnClickListener() {
 
@@ -131,4 +153,16 @@ public class MainActivity extends ActionBarActivity {
         return BASE_URL + prefs.getString(DEVICE_ID_KEY, getResources().getString(R.string.default_device));
     }
 
+    private class NetworkReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager conn = (ConnectivityManager)
+                    context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = conn.getActiveNetworkInfo();
+            if (networkInfo != null && networkInfo.isConnected()) {
+                Log.i("network", networkInfo.toString());
+                getRoomTemperature();
+            }
+        }
+    }
 }
