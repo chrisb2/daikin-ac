@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -101,12 +103,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void addListenerOnButton(final int buttonId, final String params) {
-        Button button = (Button) findViewById(buttonId);
+        final Button button = (Button) findViewById(buttonId);
         button.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                control(params);
+                control(button, params);
             }
         });
     }
@@ -131,19 +133,39 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    private void control(final String controlParams) {
+    private void control(final Button button, final String controlParams) {
         DaikinAcService service = getDaikinAcService();
         service.control(getAccessToken(), controlParams, new Callback<DaikinAcResponse>() {
             @Override
             public void success(DaikinAcResponse daikinAcResponse, Response response) {
+                if (daikinAcResponse.isSuccess()) {
+                    flashButtonText(button, true);
+                }
                 Log.i("control", daikinAcResponse.getReturnValue());
             }
 
             @Override
             public void failure(RetrofitError error) {
+                flashButtonText(button, false);
                 Log.e("control", error.toString());
             }
         });
+    }
+
+    private void flashButtonText(final Button button, final boolean success) {
+        final int currentColour = button.getCurrentTextColor();
+        if (success) {
+            button.setTextColor(getResources().getColor(R.color.text_colour_success));
+        } else {
+            button.setTextColor(getResources().getColor(R.color.text_colour_error));
+        }
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                button.setTextColor(currentColour);
+            }
+        }, 2000);
     }
 
     private DaikinAcService getDaikinAcService() {

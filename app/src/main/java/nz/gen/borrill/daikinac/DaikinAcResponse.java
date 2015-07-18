@@ -8,13 +8,17 @@ import com.google.gson.annotations.SerializedName;
 public class DaikinAcResponse {
 
     @SerializedName("return_value")
-    private String returnValue;
+    private int returnValue;
 
     public String getReturnValue() {
-        return returnValue;
+        return Integer.toString(returnValue);
     }
 
-    public void setReturnValue(String returnValue) {
+    public void setReturnValue(int returnValue) {
         this.returnValue = returnValue;
+    }
+
+    public boolean isSuccess() {
+        return (returnValue == 1);
     }
 }
