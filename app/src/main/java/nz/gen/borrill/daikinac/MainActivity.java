@@ -20,6 +20,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.HashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -37,15 +41,23 @@ public class MainActivity extends ActionBarActivity {
     public static final String TEMP_22_PARAM = "22-2-4";
 
     private SharedPreferences prefs;
+    private String deviceUrl;
 
     // The BroadcastReceiver that tracks network connectivity changes.
     private NetworkReceiver receiver = new NetworkReceiver();
+
+    private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledFuture future;
+
+    private HashMap<String, String > queryMap = new HashMap<>();
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        this.deviceUrl = getUrl();
+        this.queryMap.put(DaikinAcService.ACCESS_TOKEN_KEY, getAccessToken());
 
         getRoomTemperature();
 
@@ -54,10 +66,24 @@ public class MainActivity extends ActionBarActivity {
         addListenerOnButton(R.id.button20, TEMP_20_PARAM);
         addListenerOnButton(R.id.button22, TEMP_22_PARAM);
 
+        configureNetworkConnectTemperature();
+        configureScheduledTemperature();
+    }
+
+    private void configureNetworkConnectTemperature() {
         // Registers BroadcastReceiver to track network connection changes.
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         receiver = new NetworkReceiver();
         this.registerReceiver(receiver, filter);
+    }
+
+    private void configureScheduledTemperature() {
+        this.future = scheduler.scheduleAtFixedRate
+                (new Runnable() {
+                    public void run() {
+                        getRoomTemperature();
+                    }
+                }, 1, 1, TimeUnit.MINUTES);
     }
 
     @Override
@@ -65,6 +91,9 @@ public class MainActivity extends ActionBarActivity {
         super.onDestroy();
         if (receiver != null) {
             this.unregisterReceiver(receiver);
+        }
+        if (this.future != null) {
+            this.future.cancel(true);
         }
     }
 
@@ -113,28 +142,30 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void getRoomTemperature() {
-        DaikinAcService service = getDaikinAcService();
-        HashMap<String, String> queryMap = new HashMap<>();
-        queryMap.put(DaikinAcService.ACCESS_TOKEN_KEY, getAccessToken());
-        Log.i("temperature", DaikinAcService.ACCESS_TOKEN_KEY + "=" + getAccessToken());
-        service.roomTemperature(queryMap, new Callback<TemperatureResponse>() {
+        final TextView temperatureView = (TextView) findViewById(R.id.temperature);
+
+        getDaikinAcService().roomTemperature(this.queryMap, new Callback<TemperatureResponse>() {
             @Override
             public void success(TemperatureResponse temperatureResponse, Response response) {
                 Log.i("temperature", temperatureResponse.getResult());
-                TextView temperatureView = (TextView) findViewById(R.id.temperature);
+                setTemperatureTextColour(temperatureView, R.color.text_colour_default);
                 temperatureView.setText(temperatureResponse.getFormattedTemperature());
             }
 
             @Override
             public void failure(RetrofitError error) {
+                setTemperatureTextColour(temperatureView, R.color.text_colour_error);
                 Log.e("temperature", error.toString());
             }
         });
     }
 
+    private void setTemperatureTextColour(TextView temperatureView, int color) {
+        temperatureView.setTextColor(getResources().getColor(color));
+    }
+
     private void control(final Button button, final String controlParams) {
-        DaikinAcService service = getDaikinAcService();
-        service.control(getAccessToken(), controlParams, new Callback<DaikinAcResponse>() {
+        getDaikinAcService().control(getAccessToken(), controlParams, new Callback<DaikinAcResponse>() {
             @Override
             public void success(DaikinAcResponse daikinAcResponse, Response response) {
                 flashButtonText(button, daikinAcResponse.isSuccess());
@@ -168,7 +199,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private DaikinAcService getDaikinAcService() {
-        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(getUrl()).build();
+        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(this.deviceUrl).build();
         return restAdapter.create(DaikinAcService.class);
     }
 
