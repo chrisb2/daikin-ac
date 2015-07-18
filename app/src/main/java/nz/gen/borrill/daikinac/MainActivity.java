@@ -58,7 +58,6 @@ public class MainActivity extends ActionBarActivity {
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         receiver = new NetworkReceiver();
         this.registerReceiver(receiver, filter);
-
     }
 
     @Override
@@ -138,9 +137,7 @@ public class MainActivity extends ActionBarActivity {
         service.control(getAccessToken(), controlParams, new Callback<DaikinAcResponse>() {
             @Override
             public void success(DaikinAcResponse daikinAcResponse, Response response) {
-                if (daikinAcResponse.isSuccess()) {
-                    flashButtonText(button, true);
-                }
+                flashButtonText(button, daikinAcResponse.isSuccess());
                 Log.i("control", daikinAcResponse.getReturnValue());
             }
 
@@ -154,11 +151,13 @@ public class MainActivity extends ActionBarActivity {
 
     private void flashButtonText(final Button button, final boolean success) {
         final int currentColour = button.getCurrentTextColor();
+        int flashColor;
         if (success) {
-            button.setTextColor(getResources().getColor(R.color.text_colour_success));
+            flashColor = getResources().getColor(R.color.text_colour_success);
         } else {
-            button.setTextColor(getResources().getColor(R.color.text_colour_error));
+            flashColor = getResources().getColor(R.color.text_colour_error);
         }
+        button.setTextColor(flashColor);
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
