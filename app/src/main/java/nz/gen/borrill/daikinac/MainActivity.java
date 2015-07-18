@@ -182,13 +182,13 @@ public class MainActivity extends ActionBarActivity {
 
     private void flashButtonText(final Button button, final boolean success) {
         final int currentColour = button.getCurrentTextColor();
-        int flashColor;
+        int flashColour;
         if (success) {
-            flashColor = getResources().getColor(R.color.text_colour_success);
+            flashColour = getResources().getColor(R.color.text_colour_success);
         } else {
-            flashColor = getResources().getColor(R.color.text_colour_error);
+            flashColour = getResources().getColor(R.color.text_colour_error);
         }
-        button.setTextColor(flashColor);
+        button.setTextColor(flashColour);
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
