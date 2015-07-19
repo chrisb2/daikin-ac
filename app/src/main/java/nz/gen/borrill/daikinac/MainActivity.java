@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TEMP_20_PARAM = "20-2-4";
     private static final String TEMP_22_PARAM = "22-2-4";
 
+    private static final int SCHEDULE_INTERVAL_SECS = 30;
+    private static final int SCHEDULE_DELAY_SECS = 30;
     private static final int TWO_SECOND_DELAY = 2000;
 
     private SharedPreferences prefs;
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         getRoomTemperature();
                     }
-                }, 1, 1, TimeUnit.MINUTES);
+                }, SCHEDULE_DELAY_SECS, SCHEDULE_INTERVAL_SECS, TimeUnit.SECONDS);
     }
 
     @Override
