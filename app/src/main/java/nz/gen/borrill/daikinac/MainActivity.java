@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
 
-    private NetworkReceiver receiver = new NetworkReceiver();
+    private StatusUpdateReceiver receiver = new StatusUpdateReceiver();
     private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture future;
 
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         getRoomTemperature();
         configureScheduledTemperature();
-        configureNetworkConnectTemperature();
+        configureUpdateTemperature();
     }
 
     @Override
@@ -113,10 +113,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void configureNetworkConnectTemperature() {
-        // Registers BroadcastReceiver to track network connection changes.
+    private void configureUpdateTemperature() {
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        receiver = new NetworkReceiver();
+        receiver = new StatusUpdateReceiver();
         this.registerReceiver(receiver, filter);
     }
 
@@ -210,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
         return BASE_URL + prefs.getString(DEVICE_ID_KEY, getResources().getString(R.string.default_device));
     }
 
-    private class NetworkReceiver extends BroadcastReceiver {
+    private class StatusUpdateReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(final Context context, final Intent intent) {
             ConnectivityManager conn = (ConnectivityManager)
@@ -218,6 +217,9 @@ public class MainActivity extends AppCompatActivity {
             NetworkInfo networkInfo = conn.getActiveNetworkInfo();
             if (networkInfo != null && networkInfo.isConnected()) {
                 Log.i("network", networkInfo.toString());
+                getRoomTemperature();
+            } else if (intent.getAction().equals(Intent.ACTION_USER_PRESENT)) {
+                Log.i("user-present", intent.getAction());
                 getRoomTemperature();
             }
         }
