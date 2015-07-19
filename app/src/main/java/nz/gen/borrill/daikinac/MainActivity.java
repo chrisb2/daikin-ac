@@ -35,9 +35,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String DEVICE_ID_KEY = "device_id";
 
     private static final String OFF_PARAM = "off";
-    private static final String TEMP_18_PARAM = "18-2-4";
-    private static final String TEMP_20_PARAM = "20-2-4";
-    private static final String TEMP_22_PARAM = "22-2-4";
+    private static final String FAN_PARAM = "2";
+    private static final String MODE_HEAT_PARAM = "4";
+    private static final String MODE_COOL_PARAM = "3";
+    private static final String TEMP_18_PARAM = "18";
+    private static final String TEMP_20_PARAM = "20";
+    private static final String TEMP_22_PARAM = "22";
 
     private static final int SCHEDULE_INTERVAL_SECS = 30;
     private static final int SCHEDULE_DELAY_SECS = 30;
@@ -53,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
 
     private HashMap<String, String > queryMap = new HashMap<>();
 
+    private String currentTemperatureParam = TEMP_18_PARAM;
+    private String currentModeParam = MODE_HEAT_PARAM;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnButton(R.id.button18, TEMP_18_PARAM);
         addListenerOnButton(R.id.button20, TEMP_20_PARAM);
         addListenerOnButton(R.id.button22, TEMP_22_PARAM);
+        addListenerOnButton(R.id.buttonMode, null);
     }
 
     @Override
@@ -124,15 +131,39 @@ public class MainActivity extends AppCompatActivity {
                 }, SCHEDULE_DELAY_SECS, SCHEDULE_INTERVAL_SECS, TimeUnit.SECONDS);
     }
 
-    private void addListenerOnButton(final int buttonId, final String params) {
+    private void addListenerOnButton(final int buttonId, final String param) {
         final Button button = (Button) findViewById(buttonId);
         button.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
+                String params = "";
+                switch ((String) button.getTag()) {
+                    case "temperature":
+                        currentTemperatureParam = param;
+                        params = getParams();
+                        break;
+                    case "mode":
+                        if (MODE_HEAT_PARAM.equals(currentModeParam)) {
+                            currentModeParam = MODE_COOL_PARAM;
+                            button.setText(R.string.mode_cool);
+                        } else {
+                            currentModeParam = MODE_HEAT_PARAM;
+                            button.setText(R.string.mode_heat);
+                        }
+                        params = getParams();
+                        break;
+                    case "power":
+                        params = param;
+                        break;
+                }
                 control(button, params);
             }
         });
+    }
+
+    private String getParams() {
+        return currentTemperatureParam + '-' + FAN_PARAM + '-' + currentModeParam;
     }
 
     private void getRoomTemperature() {
@@ -159,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void control(final Button button, final String controlParams) {
+        Log.i("control", controlParams);
         this.service.control(getAccessToken(), controlParams, new Callback<DaikinAcResponse>() {
             @Override
             public void success(final DaikinAcResponse daikinAcResponse, final Response response) {

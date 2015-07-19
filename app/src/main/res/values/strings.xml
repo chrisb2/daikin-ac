@@ -12,4 +12,6 @@
     <string name="temp18">18</string>
     <string name="temp20">20</string>
     <string name="temp22">22</string>
+    <string name="mode_heat">Heat</string>
+    <string name="mode_cool">Cool</string>
 </resources>

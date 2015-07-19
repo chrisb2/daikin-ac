@@ -10,7 +10,7 @@
     <TextView android:id="@+id/temperature"
         android:text="@string/temperature"
         android:textSize="@dimen/font_size"
-        style="@style/txtStyleSeagull"
+        style="@style/txtStyleSandrift"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:width="@dimen/widget_width"
@@ -19,6 +19,7 @@
     <Button
         android:id="@+id/button18"
         android:text="@string/temp18"
+        android:tag="temperature"
         android:textSize="@dimen/font_size"
         style="@style/btnStyleSeagull"
         android:layout_width="wrap_content"
@@ -30,6 +31,7 @@
     <Button
         android:id="@+id/button20"
         android:text="@string/temp20"
+        android:tag="temperature"
         android:textSize="@dimen/font_size"
         style="@style/btnStyleSeagull"
         android:layout_width="wrap_content"
@@ -41,6 +43,7 @@
     <Button
         android:id="@+id/button22"
         android:text="@string/temp22"
+        android:tag="temperature"
         android:textSize="@dimen/font_size"
         style="@style/btnStyleSeagull"
         android:layout_width="wrap_content"
@@ -50,10 +53,24 @@
         android:layout_marginTop="@dimen/widget_margin" />
 
     <Button
+        android:id="@+id/buttonMode"
+        android:text="@string/mode_heat"
+        android:tag="mode"
+        android:textSize="@dimen/font_size"
+        style="@style/btnStyleBlackpearl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:width="@dimen/widget_width"
+        android:clickable="true"
+        android:layout_marginTop="@dimen/widget_margin" />
+
+    <Button
         android:id="@+id/buttonOff"
         android:text="@string/off"
+        android:tag="power"
         android:textSize="@dimen/font_size"
-        style="@style/btnStyleSeagull"
+        style="@style/btnStyleGenoa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAllCaps="false"
