@@ -67,22 +67,6 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnButton(R.id.button22, TEMP_22_PARAM);
     }
 
-    private void configureNetworkConnectTemperature() {
-        // Registers BroadcastReceiver to track network connection changes.
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        receiver = new NetworkReceiver();
-        this.registerReceiver(receiver, filter);
-    }
-
-    private void configureScheduledTemperature() {
-        this.future = scheduler.scheduleAtFixedRate
-                (new Runnable() {
-                    public void run() {
-                        getRoomTemperature();
-                    }
-                }, SCHEDULE_DELAY_SECS, SCHEDULE_INTERVAL_SECS, TimeUnit.SECONDS);
-    }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -127,6 +111,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void configureNetworkConnectTemperature() {
+        // Registers BroadcastReceiver to track network connection changes.
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        receiver = new NetworkReceiver();
+        this.registerReceiver(receiver, filter);
+    }
+
+    private void configureScheduledTemperature() {
+        this.future = scheduler.scheduleAtFixedRate
+                (new Runnable() {
+                    public void run() {
+                        getRoomTemperature();
+                    }
+                }, SCHEDULE_DELAY_SECS, SCHEDULE_INTERVAL_SECS, TimeUnit.SECONDS);
     }
 
     private void addListenerOnButton(final int buttonId, final String params) {
