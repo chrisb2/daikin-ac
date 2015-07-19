@@ -7,7 +7,7 @@ import java.text.DecimalFormat;
  */
 public class TemperatureResponse {
 
-    public static final String DEGREES_C = "\u2103";
+    private static final String DEGREES_C = "\u2103";
 
     private double result;
 
@@ -27,7 +27,7 @@ public class TemperatureResponse {
         return new DecimalFormat(format).format(result);
     }
 
-    public void setResult(double result) {
+    public void setResult(final double result) {
         this.result = result;
     }
 }

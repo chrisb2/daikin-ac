@@ -20,8 +20,6 @@ public interface DaikinAcService {
     @GET("/temperature")
     void roomTemperature(@QueryMap Map<String, String> options, Callback<TemperatureResponse> resp);
 
-    //void start(Callback<DaikinAcResponse> resp);
-
     @FormUrlEncoded
     @POST("/daikin")
     void control(@Field(ACCESS_TOKEN_KEY) String accessToken, @Field(PARAMS_KEY) String params, Callback<DaikinAcResponse> resp);

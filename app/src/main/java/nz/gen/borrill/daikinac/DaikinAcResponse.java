@@ -14,7 +14,7 @@ public class DaikinAcResponse {
         return Integer.toString(returnValue);
     }
 
-    public void setReturnValue(int returnValue) {
+    public void setReturnValue(final int returnValue) {
         this.returnValue = returnValue;
     }
 
