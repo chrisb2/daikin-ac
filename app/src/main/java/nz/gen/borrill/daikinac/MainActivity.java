@@ -146,9 +146,9 @@ public class MainActivity extends AppCompatActivity {
         this.service.roomTemperature(this.queryMap, new Callback<TemperatureResponse>() {
             @Override
             public void success(final TemperatureResponse temperatureResponse, final Response response) {
-                Log.i("temperature", temperatureResponse.getResult());
+                Log.i("temperature", temperatureResponse.getFormattedValue());
                 setTemperatureTextColour(temperatureView, R.color.text_colour_default);
-                temperatureView.setText(temperatureResponse.getFormattedTemperature());
+                temperatureView.setText(temperatureResponse.getFormattedCentigrade());
             }
 
             @Override

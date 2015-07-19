@@ -9,17 +9,25 @@ public class TemperatureResponse {
 
     public static final String DEGREES_C = "\u2103";
 
-    private String result;
+    private double result;
 
-    public String getResult() {
+    public double getResult() {
         return result;
     }
 
-    public String getFormattedTemperature() {
-        return new DecimalFormat("##").format(Double.valueOf(result).doubleValue()) + DEGREES_C;
+    public String getFormattedCentigrade() {
+        return formatValue("##") + DEGREES_C;
     }
 
-    public void setResult(String result) {
+    public String getFormattedValue() {
+        return formatValue("##.0");
+    }
+
+    private String formatValue(final String format) {
+        return new DecimalFormat(format).format(result);
+    }
+
+    public void setResult(double result) {
         this.result = result;
     }
 }
