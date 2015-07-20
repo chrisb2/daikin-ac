@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String getParams() {
-        return currentTemperatureParam + '-' + FAN_PARAM + '-' + currentModeParam;
+        return String.format("%s-%s-%s", currentTemperatureParam, FAN_PARAM, currentModeParam);
     }
 
     private void getRoomTemperature() {
