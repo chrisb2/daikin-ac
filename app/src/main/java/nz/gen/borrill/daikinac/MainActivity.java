@@ -88,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        // Set temperature text to red, so its clear to user that it may be out of date, if updates fail.
+        setTemperatureTextColour(null, R.color.text_colour_error);
         getRoomTemperature();
         configureScheduledTemperature();
         configureUpdateTemperature();
@@ -167,25 +169,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getRoomTemperature() {
-        final TextView temperatureView = (TextView) findViewById(R.id.temperature);
-
         this.service.roomTemperature(this.queryMap, new Callback<TemperatureResponse>() {
             @Override
             public void success(final TemperatureResponse temperatureResponse, final Response response) {
                 Log.i("temperature", temperatureResponse.getFormattedValue());
-                setTemperatureTextColour(temperatureView, R.color.text_colour_default);
-                temperatureView.setText(temperatureResponse.getFormattedCentigrade());
+                setTemperatureTextColour(temperatureResponse.getFormattedCentigrade(), R.color.text_colour_default);
             }
 
             @Override
             public void failure(final RetrofitError error) {
-                setTemperatureTextColour(temperatureView, R.color.text_colour_error);
+                setTemperatureTextColour(null, R.color.text_colour_error);
                 Log.e("temperature", error.toString());
             }
         });
     }
 
-    private void setTemperatureTextColour(TextView temperatureView, int color) {
+    private void setTemperatureTextColour(final String text, final int color) {
+        final TextView temperatureView = (TextView) findViewById(R.id.temperature);
+        if (text != null) {
+            temperatureView.setText(text);
+        }
         temperatureView.setTextColor(getResources().getColor(color));
     }
 
