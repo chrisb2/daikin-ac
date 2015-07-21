@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int SCHEDULE_INTERVAL_SECS = 30;
     private static final int SCHEDULE_DELAY_SECS = 30;
     private static final int TWO_SECOND_DELAY = 2000;
+    private static final long MIN_CLICK_INTERVAL = 1000;
 
     private SharedPreferences prefs;
 
@@ -145,29 +147,35 @@ public class MainActivity extends AppCompatActivity {
         final Button button = (Button) findViewById(buttonId);
         button.setOnClickListener(new View.OnClickListener() {
 
+            private long lastClickTime = 0;
+
             @Override
             public void onClick(View view) {
-                String params = "";
-                switch ((String) button.getTag()) {
-                    case "temperature":
-                        currentTemperatureParam = param;
-                        params = getCommandParams();
-                        break;
-                    case "mode":
-                        if (MODE_HEAT_PARAM.equals(currentModeParam)) {
-                            currentModeParam = MODE_COOL_PARAM;
-                            button.setText(R.string.mode_cool);
-                        } else {
-                            currentModeParam = MODE_HEAT_PARAM;
-                            button.setText(R.string.mode_heat);
-                        }
-                        params = getCommandParams();
-                        break;
-                    case "power":
-                        params = param;
-                        break;
+                long currentTime = SystemClock.elapsedRealtime();
+                if (currentTime - lastClickTime > MIN_CLICK_INTERVAL) {
+                    lastClickTime = currentTime;
+                    String params = "";
+                    switch ((String) button.getTag()) {
+                        case "temperature":
+                            currentTemperatureParam = param;
+                            params = getCommandParams();
+                            break;
+                        case "mode":
+                            if (MODE_HEAT_PARAM.equals(currentModeParam)) {
+                                currentModeParam = MODE_COOL_PARAM;
+                                button.setText(R.string.mode_cool);
+                            } else {
+                                currentModeParam = MODE_HEAT_PARAM;
+                                button.setText(R.string.mode_heat);
+                            }
+                            params = getCommandParams();
+                            break;
+                        case "power":
+                            params = param;
+                            break;
+                    }
+                    control(button, params);
                 }
-                control(button, params);
             }
         });
     }
@@ -219,20 +227,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void flashButtonText(final Button button, final boolean success) {
         final int currentColour = button.getCurrentTextColor();
-        int flashColour;
-        if (success) {
-            flashColour = getResources().getColor(R.color.text_colour_success);
-        } else {
-            flashColour = getResources().getColor(R.color.text_colour_error);
-        }
-        button.setTextColor(flashColour);
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                button.setTextColor(currentColour);
+        final int successColour = getResources().getColor(R.color.text_colour_success);
+        final int errorColour = getResources().getColor(R.color.text_colour_success);
+        if (currentColour != successColour && currentColour != errorColour) {
+            button.setClickable(false);
+            if (success) {
+                button.setTextColor(successColour);
+            } else {
+                button.setTextColor(errorColour);
             }
-        }, TWO_SECOND_DELAY);
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    button.setTextColor(currentColour);
+                    button.setClickable(true);
+                }
+            }, TWO_SECOND_DELAY);
+        }
     }
 
     private DaikinAcService getDaikinAcService(final String url) {
