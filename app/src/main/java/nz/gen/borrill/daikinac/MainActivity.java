@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        this.service = getDaikinAcService(getUrl());
+        this.service = getDaikinAcService(getParticleIoUrl());
         this.queryMap.put(DaikinAcService.ACCESS_TOKEN_KEY, getAccessToken());
 
         addListenerOnButton(R.id.buttonOff, OFF_PARAM);
@@ -77,12 +77,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if (this.future != null) {
-            this.future.cancel(true);
-        }
-        if (receiver != null) {
-            this.unregisterReceiver(receiver);
-        }
+        unConfigureScheduledTemperature();
+        unConfigureUpdateTemperature();
     }
 
     @Override
@@ -124,6 +120,12 @@ public class MainActivity extends AppCompatActivity {
         this.registerReceiver(receiver, filter);
     }
 
+    private void unConfigureUpdateTemperature() {
+        if (receiver != null) {
+            this.unregisterReceiver(receiver);
+        }
+    }
+
     private void configureScheduledTemperature() {
         this.future = scheduler.scheduleAtFixedRate
                 (new Runnable() {
@@ -131,6 +133,12 @@ public class MainActivity extends AppCompatActivity {
                         getRoomTemperature();
                     }
                 }, SCHEDULE_DELAY_SECS, SCHEDULE_INTERVAL_SECS, TimeUnit.SECONDS);
+    }
+
+    private void unConfigureScheduledTemperature() {
+        if (this.future != null) {
+            this.future.cancel(true);
+        }
     }
 
     private void addListenerOnButton(final int buttonId, final String param) {
@@ -143,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 switch ((String) button.getTag()) {
                     case "temperature":
                         currentTemperatureParam = param;
-                        params = getParams();
+                        params = getCommandParams();
                         break;
                     case "mode":
                         if (MODE_HEAT_PARAM.equals(currentModeParam)) {
@@ -153,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                             currentModeParam = MODE_HEAT_PARAM;
                             button.setText(R.string.mode_heat);
                         }
-                        params = getParams();
+                        params = getCommandParams();
                         break;
                     case "power":
                         params = param;
@@ -164,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private String getParams() {
+    private String getCommandParams() {
         return String.format("%s-%s-%s", currentTemperatureParam, FAN_PARAM, currentModeParam);
     }
 
@@ -178,18 +186,18 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void failure(final RetrofitError error) {
-                setTemperatureTextColour(null, R.color.text_colour_error);
                 Log.e("temperature", error.toString());
+                setTemperatureTextColour(null, R.color.text_colour_error);
             }
         });
     }
 
-    private void setTemperatureTextColour(final String text, final int color) {
+    private void setTemperatureTextColour(final String text, final int colour) {
         final TextView temperatureView = (TextView) findViewById(R.id.temperature);
         if (text != null) {
             temperatureView.setText(text);
         }
-        temperatureView.setTextColor(getResources().getColor(color));
+        temperatureView.setTextColor(getResources().getColor(colour));
     }
 
     private void control(final Button button, final String controlParams) {
@@ -197,14 +205,14 @@ public class MainActivity extends AppCompatActivity {
         this.service.control(getAccessToken(), controlParams, new Callback<DaikinAcResponse>() {
             @Override
             public void success(final DaikinAcResponse daikinAcResponse, final Response response) {
-                flashButtonText(button, daikinAcResponse.isSuccess());
                 Log.i("control", daikinAcResponse.getReturnValue());
+                flashButtonText(button, daikinAcResponse.isSuccess());
             }
 
             @Override
             public void failure(final RetrofitError error) {
-                flashButtonText(button, false);
                 Log.e("control", error.toString());
+                flashButtonText(button, false);
             }
         });
     }
@@ -236,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
         return prefs.getString(DaikinAcService.ACCESS_TOKEN_KEY, getResources().getString(R.string.default_access_token));
     }
 
-    private String getUrl() {
+    private String getParticleIoUrl() {
         return BASE_URL + prefs.getString(DEVICE_ID_KEY, getResources().getString(R.string.default_device));
     }
 
