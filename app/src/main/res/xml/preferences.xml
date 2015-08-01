@@ -10,4 +10,12 @@
             android:summary="@string/device_id_setting_summary"
             android:defaultValue="@string/default_device"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/network_setting_title">
+        <nz.gen.borrill.daikinac.NumberPickerPreference android:key="check_interval"
+            android:dialogLayout="@layout/number_pref"
+            android:dialogMessage="@string/check_interval_setting_msg"
+            android:title="@string/check_interval_setting_title"
+            android:summary="@string/check_interval_setting_summary"
+            android:defaultValue="@string/check_interval_secs_default"/>
+    </PreferenceCategory>
 </PreferenceScreen>

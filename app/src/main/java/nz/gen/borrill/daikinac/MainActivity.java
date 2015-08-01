@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TEMP_20_PARAM = "20";
     private static final String TEMP_22_PARAM = "22";
 
-    private static final int SCHEDULE_INTERVAL_SECS = 30;
     private static final int SCHEDULE_DELAY_SECS = 30;
     private static final int TWO_SECOND_DELAY = 2000;
     private static final long MIN_CLICK_INTERVAL = 1000;
@@ -129,12 +128,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configureScheduledTemperature() {
+        final int intervalSecs = prefs.getInt("check_interval", R.string.check_interval_secs_default);
         this.future = scheduler.scheduleAtFixedRate
                 (new Runnable() {
                     public void run() {
                         getRoomTemperature();
                     }
-                }, SCHEDULE_DELAY_SECS, SCHEDULE_INTERVAL_SECS, TimeUnit.SECONDS);
+                }, SCHEDULE_DELAY_SECS, intervalSecs, TimeUnit.SECONDS);
     }
 
     private void unConfigureScheduledTemperature() {

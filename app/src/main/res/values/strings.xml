@@ -8,6 +8,11 @@
     <string name="access_token_setting_summary">The access token for the Particle Cloud API</string>
     <string name="device_id_setting_title">Device Id</string>
     <string name="device_id_setting_summary">The device id of the Photon</string>
+    <string name="network_setting_title">Network</string>
+    <string name="check_interval_setting_summary">The number of seconds between network calls to update the displayed room temperature</string>
+    <string name="check_interval_setting_title">Check Interval</string>
+    <string name="check_interval_setting_msg">Seconds</string>
+    <string name="check_interval_secs_default">30</string>
     <string name="off">Off</string>
     <string name="temp18">18</string>
     <string name="temp20">20</string>
